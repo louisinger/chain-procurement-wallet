@@ -1,0 +1,3 @@
+// the configured options and settings for Tutorial
+#define ChainProcurementWallet_VERSION_MAJOR @ChainProcurementWallet_VERSION_MAJOR@
+#define ChainProcurementWallet_VERSION_MINOR @ChainProcurementWallet_VERSION_MINOR@
