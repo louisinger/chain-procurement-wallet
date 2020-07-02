@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <wally.hpp>
+#include "wally.hpp"
 
 int main(int argc, char* argv[]) {
   unsigned char bytes[32];
