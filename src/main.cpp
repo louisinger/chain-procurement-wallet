@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     std::cerr << "json parsing failed" << std::endl;
     exit(-1);
   }
-  
+
   to_digest = argjson.get("to_digest", NULL).asString();
 
   std::cout << to_digest << std::endl;
@@ -30,9 +30,6 @@ int main(int argc, char* argv[]) {
     std::cerr << "sha256 with jsoncpp failed " << res << std::endl;
     exit(res);
   }
-
   std::cout << s_result << std::endl;
-
-
   return 0;
 }
