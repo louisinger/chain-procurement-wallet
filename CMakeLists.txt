@@ -4,14 +4,17 @@ cmake_minimum_required(VERSION 3.10)
 # set the project name
 project(ChainProcurementWallet VERSION 1.0)
 
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
+file(GLOB SOURCES src/*.cpp)
+
 # add the executable
-add_executable(Main src/main.cpp)
+add_executable(Main ${SOURCES})
 
 configure_file(Config.h.in Config.h)
 
 target_link_libraries(Main ${CMAKE_SOURCE_DIR}/lib/libwallycore.a)
 target_link_libraries(Main ${CMAKE_SOURCE_DIR}/lib/libsecp256k1.a)
-
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
