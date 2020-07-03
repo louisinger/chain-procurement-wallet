@@ -19,5 +19,7 @@
 #include <wally_transaction.h>
 
 std::vector<unsigned char> to_vector(std::string const& str);
+Json::Value parse(std::string const& str);
+char* to_char_array(Json::Value const& json);
 
 #endif

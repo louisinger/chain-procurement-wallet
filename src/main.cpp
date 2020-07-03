@@ -2,7 +2,6 @@
 
 int main(int argc, char* argv[]) {
   Json::Value argjson;
-  Json::Reader reader;
   std::string to_digest;
   std::string s_result;
   char * result;
@@ -11,13 +10,9 @@ int main(int argc, char* argv[]) {
   int toHexRes = 0;
 
   memset(bytes, 0, sizeof(bytes));
-  bool parsingSuccess = reader.parse(((std::string)argv[1]).c_str(), argjson);
-  if (!parsingSuccess) {
-    std::cerr << "json parsing failed" << std::endl;
-    exit(-1);
-  }
-
-  to_digest = argjson.get("to_digest", NULL).asString();
+  argjson = parse((std::string)argv[1]);
+  std::cout << to_char_array(argjson) << std::endl;
+  to_digest = argjson.get("to_digest", "").asString();
 
   std::cout << to_digest << std::endl;
 
