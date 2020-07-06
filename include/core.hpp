@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <string>
 #include <vector>
+#include <wally_elements.h>
 #include <wally_address.h>
 #include <wally_bip32.h>
 #include <wally_bip38.h>

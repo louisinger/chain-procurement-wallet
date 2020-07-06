@@ -3,8 +3,7 @@
 
 #include "core.hpp"
 
-unsigned char* generateNewSeed (unsigned char* entropy);
-unsigned char* generateMasterKeys (unsigned char* seed);
-unsigned char* getNewAddress (unsigned char* masterKey);
+char* mnemonicToSeed (const char* mnemonic, const char* passphrase);
+char* getNewAddress (const char* seed, int depth);
 
 #endif
