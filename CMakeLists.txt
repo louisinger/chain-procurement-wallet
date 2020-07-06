@@ -6,10 +6,14 @@ project(ChainProcurementWallet VERSION 1.0)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
+# find_library(SECP256K1 "secp256k1" "/usr/local/lib" "usr/lib")
+# find_library(WALLYCORE "wallycore" "/usr/lib" "usr/local/lib")
+
 file(GLOB SOURCES src/*.cpp)
 
 # add the executable
 add_executable(Main ${SOURCES})
+add_definitions(-DBUILD_ELEMENTS)
 
 configure_file(Config.h.in Config.h)
 
