@@ -12,15 +12,26 @@ std::vector<unsigned char> to_vector(std::string const& str)
  * @return a Json::Value object.
  */
 Json::Value parse(std::string const& str) {
-  Json::Reader reader;
+  Json::CharReaderBuilder builder;
+  Json::CharReader* reader = builder.newCharReader();
+
   Json::Value json;
+  std::string errors;
 
-  bool parsingSuccess = reader.parse(str.c_str(), json);
-  if (!parsingSuccess) {
-    std::cerr << "parsing " << str << " failed" << std::endl;
-    exit(-1); 
+  bool parsingSuccessful = reader->parse(
+      str.c_str(),
+      str.c_str() + str.size(),
+      &json,
+      &errors
+  );
+
+  delete reader;
+
+  if (!parsingSuccessful) {
+      std::cerr << "Failed to parse the JSON, errors:" << std::endl;
+      std::cerr << errors << std::endl;
+      exit(-1);
   }
-
   return json;
 }
 

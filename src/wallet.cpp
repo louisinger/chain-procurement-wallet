@@ -50,6 +50,7 @@ char* getNewAddress (const char* seed, int depth) {
   int serializeMasterKey;
   int addrToScriptPubKey;
   int createConfidentialAddr;
+  int encodeKeys;
 
   unsigned char seedBytes[SEED_LEN];
   unsigned char blindingKey[HMAC_SHA512_LEN];
@@ -59,8 +60,12 @@ char* getNewAddress (const char* seed, int depth) {
   unsigned char ecPublicKey[EC_PUBLIC_KEY_LEN];
   ext_key* masterKey;
   ext_key* derivedKey;
+  char* masterKeyBase58encoded;
+  char* derivedKeyBase58encoded;
   char* address;
   char* confidentialAddress;
+  char* blindingKeyHex;
+  char* confidentialPrivKeyHex;
 
   Json::Value ret;
 
@@ -136,9 +141,30 @@ char* getNewAddress (const char* seed, int depth) {
     exit(createConfidentialAddr);
   }
 
+  encodeKeys = bip32_key_to_base58(masterKey, BIP32_FLAG_KEY_PRIVATE, &masterKeyBase58encoded);
+  if (encodeKeys != WALLY_OK) {
+    std::cerr << "error during masterKey encoding." << std::endl;
+    exit(encodeKeys);
+  }
+
+  encodeKeys = bip32_key_to_base58(derivedKey, BIP32_FLAG_KEY_PRIVATE, &derivedKeyBase58encoded);
+  if (encodeKeys != WALLY_OK) {
+    std::cerr << "error during masterKey encoding." << std::endl;
+    exit(encodeKeys);
+  }
+
+  wally_hex_from_bytes(blindingKey, sizeof(blindingKey), &blindingKeyHex);
+  wally_hex_from_bytes(ecPrivateKey, sizeof(ecPrivateKey), &confidentialPrivKeyHex);
+
   bip32_key_free(derivedKey);
   bip32_key_free(masterKey);
 
+  ret["seed"] = seed;
+  ret["depth"] = depth;
+  ret["blindingKeyHex"] = blindingKeyHex;
+  ret["walletMasterKey"] = masterKeyBase58encoded;
+  ret["derivedKey"] = derivedKeyBase58encoded;
+  ret["confidentialPrivKey"] = confidentialPrivKeyHex;
   ret["address"] = address;
   ret["confidentialAddress"] = confidentialAddress;
 
