@@ -1,18 +1,40 @@
 #include "transaction.hpp"
 
 /**
- * Generate 32 random bytes.
+ * Generate random bytes.
  */
-unsigned char* generate32bytes () {
-  size_t LEN = EC_PRIVATE_KEY_LEN;
-  unsigned char key[LEN];
-
-  for (int i=0; i<LEN; i++) {
-    key[i] = (unsigned char) rand();
+int generateBytes (unsigned char* bytes, size_t len) {
+  for (int i=0; i<len; i++) {
+    bytes[i] = (unsigned char) rand();
   }
 
-  return key;
+  return 1;
 }
+
+// char* blindOutputs (const char* txHex, int valuesIn[]) {
+//   wally_tx* tx;
+//   wally_tx_from_hex(txHex, WALLY_TX_FLAG_USE_ELEMENTS, &tx);
+//   int num_outputs = tx->num_outputs;
+//   int satoshis = 0;
+//   unsigned char assetBlindingFactors[num_outputs * 32];
+//   unsigned char valueBlindingFactors[num_outputs * 32];
+//   unsigned char finalValueBlindingFactor[32];
+//   // compute the sum of values in the input (in satoshis).
+//   for (int j=0; j<tx->num_inputs; j++) {
+//     satoshis += valuesIn[j];
+//   }
+//   // init arrays
+//   memset(assetBlindingFactors, 0, sizeof(assetBlindingFactors));
+//   memset(valueBlindingFactors, 0, sizeof(valueBlindingFactors));
+//   // generate blinding factors
+//   generateBytes(assetBlindingFactors, sizeof(assetBlindingFactors));
+//   generateBytes(valueBlindingFactors, sizeof(valueBlindingFactors) - 32);
+
+
+//   for (int i=0; i<tx->num_outputs; i++) {
+
+//   }
+// }
 
 /**
  * Sign a transaction using a private extended key.
@@ -54,12 +76,8 @@ char* signTransaction (const char* privKey, const char* txHex) {
     wally_tx_set_input_script(tx, i, scriptSig, sizeof(scriptSig));
   }
 
-  std::cout << "flag" << std::endl;
 
-  int toHex = wally_tx_to_hex(tx, WALLY_TX_FLAG_BLINDED_INITIAL_ISSUANCE,&txSignedHex);
-
-  std::cout << "toHex = " << toHex << " " << txSignedHex << std::endl;
-
+  int toHex = wally_tx_to_hex(tx, 0, &txSignedHex);
   ret["tx"] = txSignedHex;
 
   wally_free_string(txSignedHex);
@@ -69,6 +87,10 @@ char* signTransaction (const char* privKey, const char* txHex) {
   return to_char_array(ret);
 }
 
+/**
+ * Calculate the reissuance token for a given entropy.
+ * :param entropy: the entropy use to generate the token.
+ */
 char* tokenFromEntropy (const char* entropy) {
   size_t LEN = SHA256_LEN;
   unsigned char token[LEN];
@@ -102,6 +124,10 @@ char* tokenFromEntropy (const char* entropy) {
   return to_char_array(ret);
 } 
 
+/**
+ * Calculate the asset hex from the entropy.
+ * :param entropy: the entropy used for generate the asset hex.
+ */
 char* assetFromEntropy (const char* entropy) {
   size_t LEN = SHA256_LEN;
   unsigned char token[LEN];
@@ -135,31 +161,33 @@ char* assetFromEntropy (const char* entropy) {
   return to_char_array(ret);
 } 
 
-// char* reissuanceTx (char* dataHex, char* assetHex) {
-//   size_t DATA_LEN = strlen(dataHex) / 2;
-//   size_t SCRIPT_LEN = WALLY_SCRIPTPUBKEY_OP_RETURN_MAX_LEN;
-//   size_t ASSET_LEN = WALLY_TX_ASSET_CT_ASSET_LEN;
+/**
+ * Create the reissuanceTx. Work in progress.
+ */
+char* reissuanceTx (char* dataHex, char* assetHex) {
+  size_t DATA_LEN = strlen(dataHex) / 2;
+  size_t SCRIPT_LEN = WALLY_SCRIPTPUBKEY_OP_RETURN_MAX_LEN;
+  size_t ASSET_LEN = WALLY_TX_ASSET_CT_ASSET_LEN;
 
-//   unsigned char data[DATA_LEN];
-//   unsigned char script[SCRIPT_LEN]; 
-//   unsigned char asset[ASSET_LEN];
-//   wally_tx_output* assetOutput;
-//   wally_tx_input* issuanceInput;
-//   wally_tx* tx;
+  unsigned char data[DATA_LEN];
+  unsigned char script[SCRIPT_LEN]; 
+  unsigned char asset[ASSET_LEN];
+  wally_tx_output* assetOutput;
+  wally_tx_input* issuanceInput;
+  wally_tx* tx;
+
+  wally_tx_init_alloc(2, 0, 0, 0, &tx);
+
+  wally_hex_to_bytes(dataHex, data, DATA_LEN, &DATA_LEN);
+  wally_hex_to_bytes(assetHex, asset, ASSET_LEN, &ASSET_LEN);
+  wally_scriptpubkey_op_return_from_bytes(data, DATA_LEN, 0, script, SCRIPT_LEN, &SCRIPT_LEN);
+
+  wally_tx_add_raw_output(tx, 0, script, SCRIPT_LEN, 0);
+  
+
+  // wally_tx_add_output(tx, output0);
 
 
-//   wally_tx_init_alloc(2, 0, 0, 0, &tx);
 
-//   wally_hex_to_bytes(dataHex, data, DATA_LEN, &DATA_LEN);
-//   wally_hex_to_bytes(assetHex, asset, ASSET_LEN, &ASSET_LEN);
-//   wally_scriptpubkey_op_return_from_bytes(data, DATA_LEN, 0, script, SCRIPT_LEN, &SCRIPT_LEN);
-
-//   wally_tx_add_raw_output(tx, 0, script, SCRIPT_LEN, 0);
-//   wally_tx_add_raw
-
-//   // wally_tx_add_output(tx, output0);
-
-
-
-//   wally_tx_free(tx);
-// }
+  wally_tx_free(tx);
+}
