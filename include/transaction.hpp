@@ -3,7 +3,8 @@
 
 #include "core.hpp"
 
-// char* mnemonicToSeed (const char* mnemonic, const char* passphrase);
-// char* getNewAddress (const char* seed, int depth);
+char* tokenFromEntropy (const char* entropy);
+char* assetFromEntropy (const char* entropy);
+char* signTransaction (const char* privKey, const char* txHex);
 
 #endif
